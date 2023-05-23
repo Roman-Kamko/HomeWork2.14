@@ -19,7 +19,7 @@ class MyArrayListTest {
 
     @BeforeEach
     void beforeEach() {
-        out = new MyArrayList();
+        out = new MyArrayList(5);
         out.add("privet");
         out.add("poka");
     }
@@ -44,14 +44,17 @@ class MyArrayListTest {
     @Test
     void addWhenStorageFullTest() {
         out.add("ok");
+        out.add("ok");
+        out.add("ok");
         assertThatExceptionOfType(StorageIsFullException.class)
                 .isThrownBy(() -> out.add("hi"));
     }
 
     @Test
     void addWithIndexTest() {
-        String[] expected = {"privet", "bye"};
+        String[] expected = {"privet", "bye", "poka", null, null};
         assertThat(out.add(1, "bye")).isIn(expected);
+        assertThat(out.toArray()).isEqualTo(expected);
     }
 
     public static Stream<Arguments> provideParamsForBadIndexExceptionTest() {
@@ -66,6 +69,12 @@ class MyArrayListTest {
     void addWithIndexNegativeTest(int index, String string) {
         assertThatExceptionOfType(BadIndexException.class)
                 .isThrownBy(() -> out.add(index, string));
+    }
+
+    @Test
+    void setTest() {
+        String[] expected = {"privet", "bye"};
+        assertThat(out.set(1, "bye")).isIn(expected);
     }
 
     @Test

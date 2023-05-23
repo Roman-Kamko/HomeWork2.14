@@ -4,6 +4,7 @@ import edu.skypro.homework.exceptions.BadIndexException;
 import edu.skypro.homework.exceptions.ElementNotFoundException;
 import edu.skypro.homework.exceptions.StorageIsFullException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -45,12 +46,15 @@ public class MyArrayList {
     public String add(int index, String string) {
         checkElement(string);
         checkIndex(index);
+        System.arraycopy(arr, index, arr, (index + 1), (size - index));
         arr[index] = string;
         return string;
     }
 
     public String set(int index, String string) {
-        add(index, string);
+        checkElement(string);
+        checkIndex(index);
+        arr[index] = string;
         return string;
     }
 
@@ -58,7 +62,7 @@ public class MyArrayList {
         checkElement(string);
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] != null && arr[i].equals(string)) {
-                arr[i] = null;
+                System.arraycopy(arr, (i + 1), arr, i, (size - i - 1));
                 return string;
             }
         }
@@ -70,7 +74,8 @@ public class MyArrayList {
     public String remove(int index) {
         checkIndex(index);
         String removedElement = arr[index];
-        arr[index] = null;
+        System.arraycopy(arr, (index + 1), arr, index, (size - index - 1));
+        arr[arr.length - 1] = null;
         return removedElement;
     }
 
@@ -143,7 +148,7 @@ public class MyArrayList {
     }
 
     public String[] toArray() {
-        String[] newArr = new String[size];
+        String[] newArr = new String[arr.length];
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] != null) {
                 newArr[i] = arr[i];
