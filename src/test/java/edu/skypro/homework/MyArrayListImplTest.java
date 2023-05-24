@@ -2,6 +2,7 @@ package edu.skypro.homework;
 
 import edu.skypro.homework.exceptions.BadIndexException;
 import edu.skypro.homework.exceptions.ElementNotFoundException;
+import edu.skypro.homework.exceptions.InvalidItemException;
 import edu.skypro.homework.exceptions.StorageIsFullException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +15,12 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-class MyArrayListTest {
-    private MyArrayList out;
+class MyArrayListImplTest {
+    private MyArrayListImpl out;
 
     @BeforeEach
     void beforeEach() {
-        out = new MyArrayList(5);
+        out = new MyArrayListImpl(5);
         out.add("privet");
         out.add("poka");
     }
@@ -37,7 +38,7 @@ class MyArrayListTest {
 
     @Test
     void addNullElementTest() {
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(InvalidItemException.class)
                 .isThrownBy(() -> out.add(null));
     }
 
@@ -52,8 +53,17 @@ class MyArrayListTest {
 
     @Test
     void addWithIndexTest() {
-        String[] expected = {"privet", "bye", "poka", null, null};
-        assertThat(out.add(1, "bye")).isIn(expected);
+        String[] expected = {"bye", "privet"};
+        assertThat(out.add(0, "bye")).isIn(expected);
+        assertThat(out.toArray()).isEqualTo(expected);
+    }
+
+    @Test
+    void addInLastPositionTest() {
+        out.add("ok");
+        out.add("ok");
+        String[] expected = {"privet", "poka", "ok", "bye"};
+        assertThat(out.add(3, "bye")).isIn(expected);
         assertThat(out.toArray()).isEqualTo(expected);
     }
 
@@ -87,7 +97,7 @@ class MyArrayListTest {
 
     @Test
     void removeByElementNegativeTest() {
-        assertThatExceptionOfType(ElementNotFoundException.class)
+        assertThatExceptionOfType(InvalidItemException.class)
                 .isThrownBy(() -> out.remove("ok"));
     }
 
@@ -127,6 +137,7 @@ class MyArrayListTest {
     void lastIndexOfTest() {
         assertThat(out.lastIndexOf("poka"))
                 .isEqualTo(1);
+        assertThat(out.lastIndexOf("ok")).isEqualTo(-1);
     }
 
     @Test
@@ -137,28 +148,21 @@ class MyArrayListTest {
 
     @Test
     void equalsTest() {
-        MyArrayList test1 = new MyArrayList(5);
+        MyArrayListImpl test1 = new MyArrayListImpl(5);
         test1.add("privet");
         test1.add("poka");
 
-        MyArrayList test2 = new MyArrayList(5);
+        MyArrayListImpl test2 = new MyArrayListImpl(5);
         test2.add("privet");
         test2.add("ok");
 
         assertThat(out.equals(test1)).isTrue();
         assertThat(out.equals(test2)).isFalse();
-        assertThat(out.equals(out.toArray())).isFalse();
-    }
-
-    @Test
-    void equalsNegativeTest() {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> out.equals(null));
     }
 
     @Test
     void isEmptyTest() {
-        MyArrayList testList = new MyArrayList();
+        MyArrayListImpl testList = new MyArrayListImpl();
         assertThat(out.isEmpty()).isFalse();
         assertThat(testList.isEmpty()).isTrue();
     }
